@@ -1,0 +1,65 @@
+#!/bin/bash
+function error() {
+    echo "$1" && exit $2
+}
+while getopts ":s:e:t:b:c:l:v:u:i:" opt; do
+    case $opt in
+        t)
+            token=$OPTARG
+            ;;
+        c)
+            channel=$OPTARG
+            ;;
+        v)
+            version=$OPTARG
+            ;;
+        l)
+            url=$OPTARG
+            ;;
+        b)
+            build_url=$OPTARG
+            ;;
+        u)
+            user=$OPTARG
+            ;;
+        i)
+            icon=$OPTARG
+            ;;
+        e)
+            env=$OPTARG
+            ;;
+        s)
+            status=$OPTARG
+            ;;
+        \?)
+            echo "Invalid option: -$OPTARG"
+            usage;
+            ;;
+    esac
+done
+
+for opt in "icon" "user" "env" "status" "url" "build_url" "version" "channel" "token";
+do
+    echo ${!opt}
+    [ -z "${!opt}" ] && error "Option '$opt' must be set." 1
+done
+
+if [ "$status" == 'FAILED' ];
+then
+    color="#FFF000";
+elif [ "$status" == 'SUCCESS' ]
+then
+    color="#36a64f";
+else
+    error "Status can be either 'FAILED' or 'SUCCESS'" 1;
+fi
+
+curl -sS \
+     --data-urlencode "token=$token" \
+     --data-urlencode "channel=$channel" \
+     --data-urlencode 'attachments=[{"text": "<'"$url"'|'"$env"'> deploy '"$status"' <'"$build_url"'|'"$version"'>","mrkdwn_in": ["text"], "color": "'"$color"'"}]' \
+     --data-urlencode "username=$user" \
+     --data-urlencode 'as_user=false' \
+     --data-urlencode "icon_emoji=$icon" \
+     --data-urlencode 'pretty=1' \
+     https://slack.com/api/chat.postMessage
