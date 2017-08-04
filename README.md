@@ -13,6 +13,7 @@ docker run softonic/slacksend \
   -i :hammer_and_wrench: \
   -b ${env.BUILD_URL} \
   -e production \
+  -m "deploy" \
   -s "SUCCESS" \
   -l ${env.PRODUCTION_URL}
 
@@ -26,6 +27,24 @@ developerapi APP
 
 "production" is a link to the project's url, "2.18.0" is a link to the build's url.
 
-### Todo
+### Templates
+Template can be chosen with switch "m". All templates require the basic parameters:
+```
+t - token
+c - channel
+u - stack name
+i - icon
+b - build url
+```
 
-- Templates: at the moment the only template is "build", but we could add more and make it an option
+The default template is "deploy". Available templates: "deploy", "test".
+
+#### Additional requirements by template:
+
+* deploy
+
+```
+e - env
+l - url
+v - version
+```
