@@ -1,8 +1,11 @@
 #!/bin/bash
+
 function error() {
     echo "$1" && exit $2
 }
-while getopts ":s:e:t:b:c:l:v:u:i:" opt; do
+
+template="deploy"
+while getopts ":s:e:t:b:c:l:v:m:u:i:" opt; do
     case $opt in
         t)
             token=$OPTARG
@@ -31,6 +34,9 @@ while getopts ":s:e:t:b:c:l:v:u:i:" opt; do
         s)
             status=$OPTARG
             ;;
+        m)
+            template=$OPTARG
+            ;;
         \?)
             echo "Invalid option: -$OPTARG"
             usage;
@@ -38,15 +44,27 @@ while getopts ":s:e:t:b:c:l:v:u:i:" opt; do
     esac
 done
 
-for opt in "icon" "user" "env" "status" "url" "build_url" "version" "channel" "token";
+for opt in "icon" "user" "status" "build_url" "channel" "token";
 do
-    echo ${!opt}
     [ -z "${!opt}" ] && error "Option '$opt' must be set." 1
 done
 
+if [ "deploy" == "$template" ]; then
+    for opt in "env" "url" "version";
+    do
+        [ -z "${!opt}" ] && error "Option '$opt' must be set." 1
+    done
+
+    message="<$url|$env> deploy $status <$build_url|$version>";
+elif [ "test" == "$template" ]; then
+    message="Tests <$build_url|$status>";
+else
+    error "Template $template is not valid" 1
+fi
+
 if [ "$status" == 'FAILED' ];
 then
-    color="#FFF000";
+    color="#ff0000";
 elif [ "$status" == 'SUCCESS' ]
 then
     color="#36a64f";
@@ -57,9 +75,9 @@ fi
 curl -sS \
      --data-urlencode "token=$token" \
      --data-urlencode "channel=$channel" \
-     --data-urlencode 'attachments=[{"text": "<'"$url"'|'"$env"'> deploy '"$status"' <'"$build_url"'|'"$version"'>","mrkdwn_in": ["text"], "color": "'"$color"'"}]' \
+     --data-urlencode 'attachments=[{"text": "'"$message"'","mrkdwn_in": ["text"], "color": "'"$color"'"}]' \
      --data-urlencode "username=$user" \
      --data-urlencode 'as_user=false' \
      --data-urlencode "icon_emoji=$icon" \
      --data-urlencode 'pretty=1' \
-     https://slack.com/api/chat.postMessage
+     https://slack.com/api/chat.postMessage | jq ".ok"
