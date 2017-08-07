@@ -68,8 +68,11 @@ then
 elif [ "$status" == 'SUCCESS' ]
 then
     color="#36a64f";
+elif [ "$status" == 'UNSTABLE' ]
+then
+    color="#ffff00";
 else
-    error "Status can be either 'FAILED' or 'SUCCESS'" 1;
+    error "Status can be 'FAILED', 'SUCCESS' or 'UNSTABLE'" 1;
 fi
 
 curl -sS \
