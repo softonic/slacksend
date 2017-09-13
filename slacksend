@@ -55,7 +55,12 @@ if [ "deploy" == "$template" ]; then
         [ -z "${!opt}" ] && error "Option '$opt' must be set." 1
     done
 
-    message="<$url|$env> deploy $status <$build_url|$version>";
+    if [ ! -z "$url" ]; then
+        message="<$url|$env> deploy $status <$build_url|$version>";
+    else
+        message="*$env* deploy $status <$build_url|$version>";
+    fi
+
 elif [ "test" == "$template" ]; then
     message="Tests <$build_url|$status>";
 else
