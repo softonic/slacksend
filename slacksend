@@ -50,7 +50,7 @@ do
 done
 
 if [ "deploy" == "$template" ]; then
-    for opt in "env" "url" "version";
+    for opt in "env" "version";
     do
         [ -z "${!opt}" ] && error "Option '$opt' must be set." 1
     done
