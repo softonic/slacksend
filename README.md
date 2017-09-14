@@ -50,6 +50,8 @@ v - version
 
 #### Optional parameter
 
+* deploy
+
 ```
 l - url. URL of site deployed
 ```
