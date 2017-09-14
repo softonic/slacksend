@@ -45,6 +45,11 @@ The default template is "deploy". Available templates: "deploy", "test".
 
 ```
 e - env
-l - url
 v - version
+```
+
+#### Optional parameter
+
+```
+l - url. URL of site deployed
 ```
