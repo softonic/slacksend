@@ -4,8 +4,12 @@ function error() {
     echo "$1" && exit $2
 }
 
+function usage() {
+    echo "$0 [options]" && exit 1;
+}
+
 template="deploy"
-while getopts ":s:e:t:b:c:l:v:m:u:i:" opt; do
+while getopts ":s:e:t:b:c:l:v:m:u:i:z:" opt; do
     case $opt in
         t)
             token=$OPTARG
@@ -37,6 +41,9 @@ while getopts ":s:e:t:b:c:l:v:m:u:i:" opt; do
         m)
             template=$OPTARG
             ;;
+        z)
+            custom_message=$OPTARG
+            ;;
         \?)
             echo "Invalid option: -$OPTARG"
             usage;
@@ -44,27 +51,34 @@ while getopts ":s:e:t:b:c:l:v:m:u:i:" opt; do
     esac
 done
 
-for opt in "icon" "user" "status" "build_url" "channel" "token";
+for opt in "icon" "user" "status" "channel" "token";
 do
     [ -z "${!opt}" ] && error "Option '$opt' must be set." 1
 done
 
-if [ "deploy" == "$template" ]; then
-    for opt in "env" "version";
+if [ -n "custom_message" ]; then
+    message="$custom_message"
+else
+    for opt in "build_url";
     do
         [ -z "${!opt}" ] && error "Option '$opt' must be set." 1
     done
 
-    if [ -n "$url" ]; then
-        message="<$url|$env> deploy $status <$build_url|$version>";
+    if [ "deploy" == "$template" ]; then
+        for opt in "env" "url" "version";
+        do
+            [ -z "${!opt}" ] && error "Option '$opt' must be set." 1
+        done
+        if [ -n "$url" ]; then
+            message="<$url|$env> deploy $status <$build_url|$version>";
+        else
+            message="*$env* deploy $status <$build_url|$version>";
+        fi
+    elif [ "test" == "$template" ]; then
+        message="Tests <$build_url|$status>";
     else
-        message="*$env* deploy $status <$build_url|$version>";
+        error "Template $template is not valid" 1
     fi
-
-elif [ "test" == "$template" ]; then
-    message="Tests <$build_url|$status>";
-else
-    error "Template $template is not valid" 1
 fi
 
 if [ "$status" == 'FAILED' ];

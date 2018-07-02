@@ -27,17 +27,25 @@ developerapi APP
 
 "production" is a link to the project's url, "2.18.0" is a link to the build's url.
 
-### Templates
-Template can be chosen with switch "m". All templates require the basic parameters:
+### Mandatory parameters
+
 ```
 t - token
 c - channel
 u - stack name
 i - icon
+```
+
+### Templates
+Template can be chosen with switch "m". Url parameter is mandatory when templates are switched on.
+```
 b - build url
 ```
 
 The default template is "deploy". Available templates: "deploy", "test".
+
+### Custom Message
+Custom message can be sent with "z" parameter.
 
 #### Additional requirements by template:
 
