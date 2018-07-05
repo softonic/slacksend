@@ -56,7 +56,7 @@ do
     [ -z "${!opt}" ] && error "Option '$opt' must be set." 1
 done
 
-if [ -n "custom_message" ]; then
+if [ -n "$custom_message" ]; then
     message="$custom_message"
 else
     for opt in "build_url";
