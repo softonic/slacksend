@@ -99,7 +99,6 @@ curl -sS \
      --data-urlencode "channel=$channel" \
      --data-urlencode 'attachments=[{"text": "'"$message"'","mrkdwn_in": ["text"], "color": "'"$color"'"}]' \
      --data-urlencode "username=$user" \
-     --data-urlencode 'as_user=false' \
      --data-urlencode "icon_emoji=$icon" \
      --data-urlencode 'pretty=1' \
      https://slack.com/api/chat.postMessage | jq ".ok"
